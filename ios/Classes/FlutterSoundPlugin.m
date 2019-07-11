@@ -11,7 +11,7 @@
 double subscriptionDuration = 0.01;
 double dbPeakInterval = 0.8;
 bool shouldProcessDbLevel = false;
-FlutterMethodChannel* _channel;
+FlutterMethodChannel* _channel_flutter_sound;
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
   NSLog(@"audioPlayerDidFinishPlaying");
@@ -25,7 +25,7 @@ FlutterMethodChannel* _channel;
                            @"current_position" : [currentTime stringValue],
                            };
   */
-  [_channel invokeMethod:@"audioPlayerDidFinishPlaying" arguments:status];
+  [_channel_flutter_sound invokeMethod:@"audioPlayerDidFinishPlaying" arguments:status];
 
   [self stopTimer];
 }
@@ -49,7 +49,7 @@ NSString* status = [NSString stringWithFormat:@"{\"current_position\": \"%@\"}",
                            };
   */
 
-  [_channel invokeMethod:@"updateRecorderProgress" arguments:status];
+  [_channel_flutter_sound invokeMethod:@"updateRecorderProgress" arguments:status];
 }
 
 - (void)updateProgress:(NSTimer*) timer
@@ -71,13 +71,13 @@ NSString* status = [NSString stringWithFormat:@"{\"current_position\": \"%@\"}",
                            };
   */
 
-  [_channel invokeMethod:@"updateProgress" arguments:status];
+  [_channel_flutter_sound invokeMethod:@"updateProgress" arguments:status];
 }
 
 - (void)updateDbPeakProgress:(NSTimer*) dbPeakTimer
 {
       NSNumber *normalizedPeakLevel = [NSNumber numberWithDouble:MIN(pow(10.0, [audioRecorder peakPowerForChannel:0] / 20.0) * 160.0, 160.0)];
-      [_channel invokeMethod:@"updateDbPeakProgress" arguments:normalizedPeakLevel];
+      [_channel_flutter_sound invokeMethod:@"updateDbPeakProgress" arguments:normalizedPeakLevel];
 }
 
 - (void)startRecorderTimer
@@ -119,7 +119,7 @@ NSString* status = [NSString stringWithFormat:@"{\"current_position\": \"%@\"}",
             binaryMessenger:[registrar messenger]];
   FlutterSoundPlugin* instance = [[FlutterSoundPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
-  _channel = channel;
+  _channel_flutter_sound = channel;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
